@@ -1,0 +1,80 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>Chata</title> 
+    <!-- Bulma Version 0.8.x-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> 
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+</head> 
+
+
+<body> 
+  <div class="container">
+      <div class="columns">
+          <div class="column is-6">
+              <section class="hero is-info welcome is-small">
+                  <div class="hero-body">
+                      <div class="container">
+                          <h1 class="title">
+                              Chata
+                          </h1>
+                      </div>
+                  </div>
+              </section>
+              <div class="columns">
+                  <div class="column">
+                      <div class="card events-card">
+                          <header class="card-header">
+                              <p class="card-header-title">
+                                  Tryb
+                              </p>
+                          </header>
+                          <div class="card-table">
+                              <div class="content">
+                                  <table class="table is-fullwidth is-striped">
+                                      <tbody id="question-list">
+                                          <!-- insert table from json -->
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            <div class="column is-5">
+                <!-- <label for="colorpicker">Kolor:</label> -->
+                <input type="color" id="colorpicker" value="#0000ff" onchange="updateColor()">
+            </div>    
+          </div>
+          
+      </div>
+  </div>
+
+
+  <!-- SCRIPT -->
+  <script>
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        function updateColor() {
+            var color = document.getElementById("colorpicker").value;
+            rgbColor = hexToRgb(color);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://chata.local/color", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(
+                { "r": rgbColor.r, "g": rgbColor.g, "b": rgbColor.b }
+            ))
+        }
+  </script>
+  <!-- END SCRIPT -->
+</body> 
+
+</html> 

@@ -19,6 +19,11 @@ def colorWipe(strip, color, wait_ms=50):
     strip.show()
     time.sleep(wait_ms / 1000.0)
 
+def colorFill(strip, color):
+  for i in range(strip.numPixels()):
+    strip.setPixelColor(i, color)
+  strip.show()
+
 def wheel(pos):
   """Generate rainbow colors across 0-255 positions."""
   if pos < 85:
@@ -30,14 +35,23 @@ def wheel(pos):
     pos -= 170
     return Color(0, pos * 3, 255 - pos * 3)
 
-
-def rainbow(strip, wait_ms=20, iterations=1):
+def rainbow(strip, wait_ms=20):
   """Draw rainbow that fades across all pixels at once."""
-  for j in range(256 * iterations):
-    for i in range(strip.numPixels()):
-      strip.setPixelColor(i, wheel((i + j) & 255))
-    strip.show()
+  while True:
+    for j in range(256):
+      for i in range(strip.numPixels()):
+        strip.setPixelColor(i, wheel((i + j) & 255))
+      strip.show()
+      time.sleep(wait_ms / 1000.0)
+
+def strobe(strip, color, blink_ms=2, wait_ms=1000):
+  while True:
+    colorFill(strip, color)
+    time.sleep(blink_ms / 1000.0)
+    colorFill(strip, Color(0, 0, 0))
     time.sleep(wait_ms / 1000.0)
+
+
 
 if __name__ == '__main__':
   # Process arguments
@@ -49,9 +63,8 @@ if __name__ == '__main__':
   parser.add_argument('-B', '--brightness', type=int, default=255, help='change brightness')
   parser.add_argument('-s', '--speed', type=int, default=10, help='change speed of animation')
   args = parser.parse_args()
-  print(args);
   # Create NeoPixel object with appropriate configuration.
-  strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+  strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, args.brightness, LED_CHANNEL)
   # Intialize the library (must be called once before other functions).
   strip.begin()
 
@@ -59,9 +72,10 @@ if __name__ == '__main__':
     if args.mode == "color":
       colorWipe(strip, Color(args.red, args.green, args.blue), 10)
     elif args.mode == "rainbow":
-      while True:
-        rainbow(strip);
+      rainbow(strip);
+    elif args.mode == "strobe":
+      strobe(strip, Color(args.red, args.green, args.blue), 0, 100)
     else:
       print(f"Error: no {args.mode} mode found")
   except KeyboardInterrupt:
-      colorWipe(strip, Color(0, 0, 0), 10)
+      colorWipe(strip, Color(0, 0, 0), 0)
