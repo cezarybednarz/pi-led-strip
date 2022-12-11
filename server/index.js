@@ -7,9 +7,11 @@ const spawn = require('child_process').spawn;
 const port = 80
 
 app.use(bodyParser.json());
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+  res.sendFile(path.join(__dirname, '/public/index.css'));
 })
 
 app.post('/color', (req, res) => {
@@ -65,7 +67,7 @@ function updateStrip() {
   children = [];
   var child = spawn(
     "python3", [
-      "../scripts/strip-control.py",
+      "/home/pi/Projects/pi-led-strip/scripts/strip-control.py",
       "-m", mode,
       "-r", red,
       "-g", green,
