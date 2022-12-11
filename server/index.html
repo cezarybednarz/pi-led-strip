@@ -6,49 +6,65 @@
     <title>Chata</title> 
     <!-- Bulma Version 0.8.x-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> 
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <link rel='stylesheet' type='text/css' href='./index.css'>
 </head> 
 
 
 <body> 
   <div class="container">
       <div class="columns">
-          <div class="column is-6">
-              <section class="hero is-info welcome is-small">
-                  <div class="hero-body">
-                      <div class="container">
-                          <h1 class="title">
-                              Chata
-                          </h1>
-                      </div>
-                  </div>
-              </section>
-              <div class="columns">
-                  <div class="column">
-                      <div class="card events-card">
-                          <header class="card-header">
-                              <p class="card-header-title">
-                                  Tryb
-                              </p>
-                          </header>
-                          <div class="card-table">
-                              <div class="content">
-                                  <table class="table is-fullwidth is-striped">
-                                      <tbody id="question-list">
-                                          <!-- insert table from json -->
-                                      </tbody>
-                                  </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-            <div class="column is-5">
-                <!-- <label for="colorpicker">Kolor:</label> -->
-                <input type="color" id="colorpicker" value="#0000ff" onchange="updateColor()">
-            </div>    
+          <div class="column is-12">
+            <section class="hero is-info welcome is-small">
+                <div class="hero-body">
+                    <div class="container">
+                        <h1 class="title">
+                            Salon
+                        </h1>
+                    </div>
+                </div>
+            </section>
+            <section class="info-tiles">
+                <div class="tile is-ancestor has-text-centered">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="subtitle">Kolor</p>
+                            <input type="color" id="colorpicker" value="#0000ff" onchange="updateColor()"> 
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="subtitle">Jasność</p>
+                            <input id="sliderBrightness" onchange="updateBrightness()" class="slider has-output is-fullwidth" min="0" max="100" value="100" step="1" type="range">
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="subtitle">Szybkość animacji</p>
+                            <input id="sliderSpeed" onchange="updateSpeed()" class="slider has-output is-fullwidth" min="0" max="1000" value="900" step="1" type="range">
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="subtitle">Tryb</p>
+                            <div class="select is-rounded">
+                                <select id="selectMode" onchange="updateMode()">
+                                    <option value="color">Kolor</option>
+                                    <option value="rainbow">Tęcza</option>
+                                    <option value="strobe">Stroboskop</option>
+                                    <option value="randompixel">Losowy piksel</option>
+                                </select>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="subtitle">Synchronizacja z muzyką</p>
+                            <p class="title">TODO</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
           </div>
-          
       </div>
   </div>
 
@@ -73,6 +89,35 @@
                 { "r": rgbColor.r, "g": rgbColor.g, "b": rgbColor.b }
             ))
         }
+        function updateSpeed() {
+            var speed = 1000 - document.getElementById("sliderSpeed").value;
+            console.log(speed);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://chata.local/speed", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(
+                { speed: speed }
+            ))
+        }
+        function updateBrightness() {
+            var brightness = document.getElementById("sliderBrightness").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://chata.local/brightness", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(
+                { brightness: brightness }
+            ))
+        }
+        function updateMode() {
+            var mode = document.getElementById("selectMode").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://chata.local/mode", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(
+                { mode: mode }
+            ))
+        }
+        
   </script>
   <!-- END SCRIPT -->
 </body> 

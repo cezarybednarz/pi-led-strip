@@ -13,32 +13,52 @@ app.get('/', (req, res) => {
 })
 
 app.post('/color', (req, res) => {
-  console.log(req.body);
   red = req.body.r;
   green = req.body.g;
   blue = req.body.b;
   updateStrip();
 })
 
+app.post('/brightness', (req, res) => {
+  brightness = req.body.brightness;
+  updateStrip();
+  res.end()
+})
+
+app.post('/speed', (req, res) => {
+  speed = req.body.speed;
+  updateStrip();
+  res.end()
+})
+
+app.post('/mode', (req, res) => {
+  mode = req.body.mode;
+  updateStrip();
+  res.end()
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-// previous child process pid
-var childPid = null;
+// previous child processes pids
+var children  = [];
 
 // led strip script arguments
 var mode = "color";
+var brightness = 100;
+var speed = 200;
 var red = 255;
 var green = 255;
 var blue = 255;
 
 // update LED strip with command arguments
 function updateStrip() {
-  // TODO
-  // if (childPid !== null) { 
-  //   process.kill(-childPid);  
-  // }
+  children.forEach(function(child) {
+    child.kill("SIGTERM");
+    console.log(child.pid);
+  });
   var child = spawn(
     "sudo", [
       "python3", 
@@ -46,9 +66,12 @@ function updateStrip() {
       "-m", mode,
       "-r", red,
       "-g", green,
-      "-b", blue
+      "-b", blue,
+      "-B", brightness,
+      "-s", speed,
     ]
   );
+  children.push(child);
   child.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
   });
@@ -59,6 +82,4 @@ function updateStrip() {
   child.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
   });
-  // TODO
-  // process.kill(-child.pid);
 }
