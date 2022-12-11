@@ -21,10 +21,10 @@
                             Salon
                         </h1>
                     </div>
-                    <div class="field">
-                        <input id="show_identifiers" type="checkbox" name="show_identifiers" class="switch is-rtl is-rounded">
-                        <label for="show_identifiers">Show Identifiers</label>
-                      </div>
+                    <div class="field" onchange="updatePower()">
+                        <input id="changePower" type="checkbox" name="show_identifiers" class="switch is-rtl is-rounded" checked>
+                        <label for="changePower">Listwa LED</label>
+                    </div>
                 </div>
             </section>
             <section class="info-tiles">
@@ -120,6 +120,23 @@
             xhr.send(JSON.stringify(
                 { mode: mode }
             ))
+        }
+        function updatePower() {
+            if (!document.getElementById("changePower").checked) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://chata.local/brightness", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(
+                    { brightness: 0 }
+                ))
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://chata.local/brightness", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(
+                    { brightness: document.getElementById("sliderBrightness").value }
+                ))
+            }
         }
         
   </script>
