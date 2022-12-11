@@ -43,7 +43,7 @@ app.listen(port, () => {
 })
 
 // previous child processes pids
-var children  = [];
+var previousPid  = null;
 
 // led strip script arguments
 var mode = "color";
@@ -55,13 +55,16 @@ var blue = 255;
 
 // update LED strip with command arguments
 function updateStrip() {
-  children.forEach(function(child) {
-    child.kill("SIGTERM");
-    console.log(child.pid);
-  });
+  if (previousPid !== null) {
+    try {
+      process.kill(previousPid, "SIGTERM");
+    } catch {
+      console.error("process already finished");
+    }
+  }
+  children = [];
   var child = spawn(
-    "sudo", [
-      "python3", 
+    "python3", [
       "../scripts/strip-control.py",
       "-m", mode,
       "-r", red,
@@ -71,11 +74,10 @@ function updateStrip() {
       "-s", speed,
     ]
   );
-  children.push(child);
+  previousPid = child.pid;
   child.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
   });
-  
   child.stderr.on('data', (data) => {
     console.error(`stderr: ${data}`);
   });

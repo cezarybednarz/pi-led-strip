@@ -3,6 +3,7 @@
 import time
 from rpi_ws281x import PixelStrip, Color
 import argparse
+import random
 
 # LED strip configuration:
 LED_COUNT = 300       # Number of LED pixels.
@@ -44,13 +45,22 @@ def rainbow(strip, wait_ms=20):
       strip.show()
       time.sleep(wait_ms / 1000.0)
 
-def strobe(strip, color, blink_ms=2, wait_ms=1000):
+def strobe(strip, color, wait_ms=1000):
   while True:
     colorFill(strip, color)
-    time.sleep(blink_ms / 1000.0)
     colorFill(strip, Color(0, 0, 0))
     time.sleep(wait_ms / 1000.0)
 
+def randompixel(strip, color, wait_ms=20):
+  while True:
+    pixel = random.randint(0,strip.numPixels())
+    strip.setPixelColor(pixel, color)
+    strip.show()
+    time.sleep(wait_ms / 1000.0)
+    strip.setPixelColor(pixel, Color(0, 0, 0))
+    strip.show()
+
+    
 
 
 if __name__ == '__main__':
@@ -61,7 +71,7 @@ if __name__ == '__main__':
   parser.add_argument('-g', '--green', type=int, default=255, help='green color')
   parser.add_argument('-b', '--blue', type=int, default=255, help='blue color')
   parser.add_argument('-B', '--brightness', type=int, default=255, help='change brightness')
-  parser.add_argument('-s', '--speed', type=int, default=10, help='change speed of animation')
+  parser.add_argument('-s', '--speed', type=int, default=100, help='change speed of animation')
   args = parser.parse_args()
   # Create NeoPixel object with appropriate configuration.
   strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, args.brightness, LED_CHANNEL)
@@ -70,12 +80,14 @@ if __name__ == '__main__':
 
   try:
     if args.mode == "color":
-      colorWipe(strip, Color(args.red, args.green, args.blue), 10)
+      colorFill(strip, Color(args.red, args.green, args.blue))
     elif args.mode == "rainbow":
-      rainbow(strip);
+      rainbow(strip, args.speed);
     elif args.mode == "strobe":
-      strobe(strip, Color(args.red, args.green, args.blue), 0, 100)
+      strobe(strip, Color(args.red, args.green, args.blue), args.speed)
+    elif args.mode == "randompixel":
+      randompixel(strip, Color(args.red, args.green, args.blue), args.speed)
     else:
       print(f"Error: no {args.mode} mode found")
   except KeyboardInterrupt:
-      colorWipe(strip, Color(0, 0, 0), 0)
+      colorFill(strip, Color(0, 0, 0))
